@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  name: kafka-ui-kowl
+  namespace: test-kafka-ui-kowl
+spec:
+  tls:
+    - hosts:
+        - test-kafka-ui-kowl.site.com
+      secretName: site.com
+  rules:
+    - host: test-kafka-ui-kowl.site.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: kafka-ui-kowl
+              servicePort: 8080

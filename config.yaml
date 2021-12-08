@@ -1,0 +1,10 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: kafka-ui-kowl
+  namespace: test-kafka-ui-kowl
+data:
+  config.yaml: |
+    kafka:
+      brokers:
+        - "cluster-kafka-brokers.test-kafka4cdc.svc:9092"

@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-ui-kowl
+  namespace: test-kafka-ui-kowl
+spec:
+  selector:
+    matchLabels:
+      app: kafka-ui-kowl
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: kafka-ui-kowl
+    spec:
+      serviceAccountName: kafka-ui-kowl-user-anyuid
+      volumes:
+        - name: kafka-ui-kowl-volume
+          configMap:
+            name: kafka-ui-kowl
+        - name: kafka-certs-pv
+          persistentVolumeClaim:
+            claimName: kafka-certs
+      containers:
+        - name: kafka-ui-kowl
+          imagePullPolicy: "IfNotPresent"
+          image: quay.io/cloudhut/kowl:v1.5.0
+          command: ["./kowl"]
+          args: ["--config.filepath=/etc/kowl/config.yaml"]
+          ports:
+          - containerPort: 8080
+          env:
+            - name: KAFKA_TLS_ENABLED
+              value: 'true'
+            - name: KAFKA_TLS_CAFILEPATH
+              value: '/etc/kafka-certs/ca.crt'
+          resources:
+            limits:
+              cpu: "1"
+              memory: "2Gi"
+            requests:
+              cpu: "50m"
+              memory: "128Mi"
+          volumeMounts: 
+            - name: kafka-ui-kowl-volume
+              mountPath: /etc/kowl/config.yaml
+              subPath: config.yaml
+            - name: kafka-certs-pv
+              mountPath: /etc/kafka-certs
